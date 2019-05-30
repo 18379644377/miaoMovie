@@ -61,6 +61,11 @@ export default new Router({
           path: '/detaile/:id',
           name: 'Detaile',
           component: () => import('./components/Detaile')
+        },
+        {
+          path: '/moviedeta/',
+          name: 'Moviedeta',
+          component: () => import('./components/Moviedeta')
         }
       ]
 

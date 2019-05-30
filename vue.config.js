@@ -8,8 +8,8 @@
                     changeOrigin:true
                 },
                 "/api":{
-                    target: "http://zhouxunwang.cn/",
-                    pathRewrite: {"^/zhouxunwang" : ""},
+                    target: "http://39.97.33.178/api",
+                    pathRewrite: {"^/api" : ""},
                     changeOrigin:true
                 }
                 

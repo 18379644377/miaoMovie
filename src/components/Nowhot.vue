@@ -1,6 +1,6 @@
 <template>
   <div class="nowhot">
-    <div
+    <div @click="goState({name:'Moviedeta'})"
       class="nowhot-box"
       v-for="(data,index) in hotMovie"
       :key="index"
