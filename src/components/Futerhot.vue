@@ -1,7 +1,8 @@
 <template>
   <div class="futerhot">
     <div class="futer-box">
-      <div class="futer-one" v-for="(data,index) in nearMovie" :key="index">
+      <div class="futer-one" @click="goState({name:'Moviedeta',params:{mid:data.id}})"
+       v-for="(data,index) in nearMovie" :key="index">
         <div class="hot-img">
           <img :src="data.img|imgfilter()">
         </div>
@@ -23,32 +24,33 @@
         </div>
       </div>
     </div>
+    <van-loading v-show="isshow" type="spinner"/>
   </div>
 </template>
 
 <script>
-// 引入图片过滤，才能获取图片
-import vue from "vue";
-vue.filter("imgfilter", function(value) {
-  return value.replace("w.h", "64.92");
-});
-
 export default {
   name: "Futerhot",
   data() {
     return {
-      nearMovie: ""
+      nearMovie: "",
+      isshow:true
     };
   },
-  methods: {},
+  methods: {
+    goState(path) {
+      this.$router.push(path);
+    }
+  },
   created() {
     // this.touchImg()
     this.axios
       .get(
-        "/maoyan/ajax/moreComingList?ci=1&token=&limit=20&movieIds=1251411%2C1208258%2C1212449%2C246061%2C1238885%2C1225975%2C1215829%2C1281596%2C1226516%2C1279730"
+        "/maoyan/ajax/moreComingList?ci="+ this.$store.state.city.id+"&token=&limit=20&movieIds=1251411%2C1208258%2C1212449%2C246061%2C1238885%2C1225975%2C1215829%2C1281596%2C1226516%2C1279730"
       )
       .then(
         data => {
+          this.isshow = false;
           var nearMovies = JSON.stringify(data.data.coming);
           localStorage.setItem("nearmovie", nearMovies);
           this.nearMovie = JSON.parse(localStorage.getItem("nearmovie"));

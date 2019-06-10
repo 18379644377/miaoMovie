@@ -17,4 +17,10 @@
   max-width: 640px;
   margin:0 auto;
 }
+.van-loading{
+  margin: 200px auto;
+  span{
+    color: #ff6700;
+  }
+}
 </style>

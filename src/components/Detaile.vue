@@ -32,7 +32,7 @@
     <!-- 中间线 -->
     <div class="line"></div>
     <van-tabs>
-      <van-tab v-for="(item,index) in shopcard" :title="item.showDate" :key="index">
+      <van-tab v-for="(item,index) in shopcard" :title="item.dateShow" :key="index">
         <div class="shop-card"
          v-for="(itm,idx) in item.plist" :key="idx">
           <div class="shopcard">
@@ -47,7 +47,8 @@
           </div>
           <div class="shop-money">
             <p class="money">
-              <span class="money-one">￥{{parseInt(itm.vipPrice*1.3)}}</span>
+              <span v-if="itm.vipPrice == ''" class="money-one">暂无报价</span>
+              <span v-else class="money-one">￥{{Math.round(itm.vipPrice*1.3)}}</span>
               <span class="money-two">
                 折扣卡￥{{itm.vipPrice}}
               </span>
@@ -60,7 +61,7 @@
         </div>
       </van-tab>
     </van-tabs>
-
+    
     <!-- 中间xian -->
     <div class="line"></div>
     <!-- 爆米花 -->
@@ -85,6 +86,7 @@
         </div>
       </div>
     </div>
+    <van-loading v-show="isshow" type="spinner"/>
   </div>
 </template>
 
@@ -103,7 +105,10 @@ export default {
       product: [],
       movie: null,
       moviename: "",
-      moviesing:""
+      moviesing:{
+        img: ''
+      },
+      isshow:true
     };
   },
   methods: {
@@ -114,12 +119,12 @@ export default {
   created() {
     this.axios.get("/maoyan/ajax/cinemaDetail?cinemaId=" + this.$route.params.id).then(
       data => { 
-        // window.console.log(data.data);
+        this.isshow = false;
         this.moviename = data.data.cinemaData;
         this.shopcard = data.data.showData.movies[1].shows;
         this.product = data.data.dealList.dealList;
         this.moviesing = data.data.showData.movies[1]
-       
+      //  window.console.log(this.shopcard);
       },
       // cinemaDetail?cinemaId=17404&movieId=1254277
       // filterCinemas?movieId=1254277&day=2019-05-23
@@ -270,7 +275,7 @@ export default {
   }
   .shop-home {
     width: 25%;
-    padding: 0 2px;
+    padding: 5px 2px 0;
     .time {
       font-size: 14px;
       color: #000;
@@ -278,7 +283,7 @@ export default {
   }
   .shop-money {
     width: 30%;
-    padding: 0 2px;
+    padding-top:4px ;
     .money-one {
       display: inline-block;
       font-size: 16px;

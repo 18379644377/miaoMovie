@@ -3,14 +3,14 @@
     <div class="city-now" id="miao">
       <h2>定位城市</h2>
       <div class="nowCity">
-        <span>{{nowcity.nm}}</span>
+        <span @click="bindCity(nowcity.nm,nowcity.id)">{{nowcity.nm}}</span>
       </div>
     </div>
     
       <div class="city-hot">
         <h2>热门城市</h2>
         <ul>
-          <li v-for="(item,index) in hotLists" :key="index">{{item.nm}}</li>
+          <li v-for="(item,index) in hotLists" @click="bindCity(item.nm,item.id)" :key="index">{{item.nm}}</li>
         </ul>
       </div>
     
@@ -18,7 +18,7 @@
       <div v-for="(item,index) in cityList" :key="index" class="city-all">
         <h2>{{item.index}}</h2>
         <ul>
-          <li v-for="(itm,idx) in item.list" :key="idx">{{itm.nm}}</li>
+          <li v-for="(itm,idx) in item.list" @click="bindCity(itm.nm,itm.id)"  :key="idx">{{itm.nm}}</li>
         </ul>
       </div>
     </div>
@@ -37,6 +37,7 @@
         >{{item.index}}</li>
       </ul>
     </div>
+    <van-loading v-show="isshow" type="spinner"/>
   </div>
 </template>
 
@@ -47,10 +48,17 @@ export default {
     return {
       cityList: "",
       hotLists: "",
-      nowcity: "正在定位城市..."
+      nowcity: "正在定位城市...",
+      isshow:true
     };
   },
   methods: {
+    // 城市传送
+    bindCity(nm,id) {
+      this.$store.state.city.nm = nm;
+      this.$store.state.city.id = id; 
+      this.$router.back()
+    },
     // 城市排序分类
     formatCityList(cities) {
       var cityList = [];
@@ -62,17 +70,17 @@ export default {
         }
       }
       this.hotLists = hotLists;
-      for (var i = 0; i < cities.length; i++) {
-        var firstLetter = cities[i].py.substring(0, 1).toUpperCase();
+      for (var y = 0; y < cities.length; y++) {
+        var firstLetter = cities[y].py.substring(0, 1).toUpperCase();
         if (toCom(firstLetter)) {
           cityList.push({
             index: firstLetter,
-            list: [{ nm: cities[i].nm, id: cities[i].id }]
+            list: [{ nm: cities[y].nm, id: cities[y].id }]
           });
         } else {
           for (var j = 0; j < cityList.length; j++) {
             if (cityList[j].index === firstLetter) {
-              cityList[j].list.push({ nm: cities[i].nm, id: cities[i].id });
+              cityList[j].list.push({ nm: cities[y].nm, id: cities[y].id });
             }
           }
         }
@@ -93,7 +101,6 @@ export default {
         for (var j = 0; j < cityList.length; j++) {
           if (cityList[j].index === firstLetter) {
             return false;
-          } else {
           }
         }
         return true;
@@ -113,6 +120,8 @@ export default {
           if (msg == "ok") {
             if(res.data.data.nm != null){
               this.nowcity = res.data.data;
+              localStorage.setItem("city",JSON.stringify(this.nowcity));
+              
             }
           }
         },
@@ -123,19 +132,36 @@ export default {
     }
   },
   created() {
-    this.axios.get("/api/cityList").then(
-      res => {
-        var msg = res.data.msg;
-        if (msg == "ok") {
-          var cities = res.data.data.cities;
-          this.formatCityList(cities);
+
+    var cityList = localStorage.getItem('cityList');
+    var hotLists = localStorage.getItem('hotLists');
+    if(cityList && hotLists){
+      this.isshow = false;
+      this.cityList = JSON.parse(cityList) ;
+      this.hotLists = JSON.parse(hotLists);
+      
+    }else{
+      this.axios.get("/api/cityList").then(
+        res => {
+          this.isshow = false;
+          var msg = res.data.msg;
+          if (msg == "ok") {
+            var cities = res.data.data.cities;
+            this.formatCityList(cities);
+              localStorage.setItem("cityList",JSON.stringify(this.cityList));
+                localStorage.setItem("hotLists",JSON.stringify(this.hotLists));
+          }
+        },
+        () => {
+          console.log("cuowu");
         }
-      },
-      () => {
-        console.log("cuowu");
-      }
-    );
+      );
+    }
+    
     this.getCity();
+  },
+  computed:{
+    
   }
 };
 </script>
@@ -217,6 +243,7 @@ export default {
     margin-top: 1px;
   }
 }
+ 
 </style>
 
 

@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-
+import { Loading } from 'vant';
 import { Icon } from 'vant'
-Vue.use(Router).use(Icon) 
+Vue.use(Router).use(Icon) .use(Loading)
+Vue.filter("imgfilter", function(value) {
+  return value.replace("w.h", "1000.1000");
+});
 
 export default new Router({
   routes: [
@@ -63,7 +66,7 @@ export default new Router({
           component: () => import('./components/Detaile')
         },
         {
-          path: '/moviedeta/',
+          path: '/moviedeta/:mid',
           name: 'Moviedeta',
           component: () => import('./components/Moviedeta')
         }

@@ -1,13 +1,16 @@
 <template>
   <div class="movie">
+    
     <!-- 搜索栏 -->
     <div class="home-box">
-      <div class="index-addr">
-        广州
-        <van-icon name="arrow-down"/>
+      <div class="index-addr" @click="goState({name:'City'})">
+        <van-icon class="down" name="location-o" />
+        {{getCity.nm}}
       </div>
       <van-search placeholder="请输入搜索关键词" v-model="value"/>
     </div>
+    <!-- loding图标 -->
+    <van-loading v-show="isshow" type="spinner"/>
     <!-- 电影院 -->
     <div class="movie-content">
       <div
@@ -50,7 +53,8 @@ export default {
   data() {
     return {
       value: "",
-      movieAddre: ""
+      movieAddre: "",
+      isshow:true
     };
   },
   created() {
@@ -58,10 +62,11 @@ export default {
       .get(
         "/maoyan/ajax/cinemaList?day=2019-05-21&offset=0&" +
           "limit=20&districtId=-1&lineId=-1&hallType=-1&brandId=-1&" +
-          "serviceId=-1&areaId=-1&stationId=-1&item=&updateShowDay=true&reqId=1558440344295&cityId=20"
+          "serviceId=-1&areaId=-1&stationId=-1&item=&updateShowDay=true&reqId=1558440344295&cityId="+this.$store.state.city.id
       )
       .then(
         data => {
+          this.isshow = false;
           var movieAddr = JSON.stringify(data.data.cinemas);
           localStorage.setItem("movieAddrs", movieAddr);
           this.movieAddre = JSON.parse(localStorage.getItem("movieAddrs"));
@@ -79,6 +84,11 @@ export default {
   },
   components: {
     [Search.name]: Search
+  },
+  computed:{
+    getCity:function  (){
+      return this.$store.state.city
+    } 
   }
 };
 </script>
@@ -107,10 +117,18 @@ export default {
 
   // 地址栏
   .index-addr {
-    width: 60.9988px;
+    width: 17%;
+    white-space: nowrap;
+    overflow: hidden;
     text-align: center;
     line-height: 45.0018px;
     padding: 0 10.0011px;
+    .down{
+      position: relative;
+      top: 5px;
+      font-size: 23.0009px;
+      color: #ff6700;
+    }
   }
   > div {
     float: left;

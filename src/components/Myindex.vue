@@ -6,7 +6,7 @@
       <span>{{title}}</span>
     </div>
     <!-- 提交部分 -->
-    <div v-show="!islogin">
+    <div v-show="!$store.state.islogin">
       <div class="login-box">
         <div class="login-body">
           <van-cell-group v-show="!isBlock">
@@ -74,7 +74,7 @@
       </div>
     </div>
     <!-- 登录状态 -->
-    <div class="myindex" v-show="islogin">
+    <div class="myindex" v-show="$store.state.islogin">
       <div class="ul-line"></div>
       <ul class="ul-vip">
         <li class="vip">
@@ -129,9 +129,7 @@ export default {
         phoneCode: "",
         username: "",
         password: ""
-      },
-      // 登录切换
-      islogin: false
+      }
     };
   },
   methods: {
@@ -183,7 +181,7 @@ export default {
     },
     // 登录状态
     goLogin() {
-      this.islogin = true;
+      this.$store.commit('changelo')
       this.title = "小喵已登录";
     }
   },

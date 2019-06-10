@@ -1,6 +1,6 @@
 <template>
   <div class="nowhot">
-    <div @click="goState({name:'Moviedeta'})"
+    <div @click="goState({name:'Moviedeta',params:{mid:data.id}})"
       class="nowhot-box"
       v-for="(data,index) in hotMovie"
       :key="index"
@@ -29,22 +29,18 @@
         <button v-else class="btn">购票</button>
       </div>
     </div>
+    <van-loading v-show="isshow" type="spinner"/>
   </div>
 </template>
 
 <script>
 import { Button } from "vant";
-// 引入图片过滤，才能获取图片
-import vue from "vue";
-vue.filter("imgfilter", function(value) {
-  return value.replace("w.h", "64.92");
-});
-
 export default {
   name: "Nowhot",
   data() {
     return {
-      hotMovie: ""
+      hotMovie: "",
+      isshow:true
     };
   },
   methods: {
@@ -53,19 +49,22 @@ export default {
     }
   },
   created() {
-    this.axios
-      .get("/maoyan/ajax/movieOnInfoList?token=&limit=20&cityId=20")
-      .then(
-        data => {
-          var hotMovies = JSON.stringify(data.data.movieList);
-          localStorage.setItem("hotmovie", hotMovies);
-          this.hotMovie = JSON.parse(localStorage.getItem("hotmovie"));
-          // console.log('data ==> ',this.hotMovie)
-        },
-        () => {
-          window.console.log("请求失败");
-        }
-      );
+      
+      this.axios
+        .get("/maoyan/ajax/movieOnInfoList?token=&limit=20&cityId=" + this.$store.state.city.id)
+        .then(
+          data => {
+            this.isshow = false;
+            var hotMovies = JSON.stringify(data.data.movieList);
+            localStorage.setItem("hotmovie", hotMovies);
+            this.hotMovie = JSON.parse(localStorage.getItem("hotmovie"));
+            // console.log('data ==> ',this.hotMovie)
+          },
+          () => {
+            window.console.log("请求失败");
+          }
+        );
+      
   },
   components: {
     [Button.name]: Button
@@ -94,6 +93,10 @@ export default {
   // 图片部分
   .hot-img {
     margin: 0 7.0004px 0 14.9998px;
+    img{
+      width: 64px;
+      height: 94px;
+    }
   }
   div {
     float: left;
